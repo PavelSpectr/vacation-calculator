@@ -29,7 +29,8 @@ public class User {
     @NotBlank(message = "Не верный формат даты, либо поле не заполнено. Введите дату в формате ДД.ММ.ГГГГ!")
     private LocalDate birthday;
 
-    @Email(message = "Неверный формат электронной почты.", regexp = "@*.*")
+    @NotBlank(message = "Поле электронной почты не может быть пустым.")
+    @Email(message = "Неверный формат электронной почты.")
     private String email;
 
     @NotBlank(message = "Поле зарплаты не может быть пустым.")
@@ -47,14 +48,20 @@ public class User {
     @PastOrPresent
     private LocalDate hired;
 
-    public User(UUID id, String name, String lastName, LocalDate birthday, String email, Integer salary, LocalDate lastVacationDate, Status status) {
-        this.id = id;
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    private LocalDate fired;
+
+    public User(String name,
+                String lastName,
+                LocalDate birthday,
+                String email,
+                Integer salary,
+                LocalDate lastVacationDate) {
         this.name = name;
         this.lastName = lastName;
         this.birthday = birthday;
         this.email = email;
         this.salary = salary;
         this.lastVacationDate = lastVacationDate;
-        this.status = status;
     }
 }

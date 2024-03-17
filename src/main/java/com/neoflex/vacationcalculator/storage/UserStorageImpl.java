@@ -2,41 +2,69 @@ package com.neoflex.vacationcalculator.storage;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.neoflex.vacationcalculator.model.User;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+@Component
+@Slf4j
 public class UserStorageImpl implements UserStorage {
     private final Map<UUID, User> users = new HashMap<>();
     private ObjectIdGenerators.UUIDGenerator uuid;
 
     @Override
     public User createUser(User user) {
-        return null;
+        log.debug("Создание пользователя...");
+        if (user.getBirthday().isAfter(LocalDate.now().minusYears(18))) {
+            throw new ValidationException("Работник не может быть младше 18 лет.");
+        }
+        user.setId(UUID.randomUUID());
+        users.put(user.getId(), user);
+        log.debug("Пользователь успешно добавлен: {} {}", user.getLastName(), user.getName());
+
+        return user;
     }
 
     @Override
     public User updateUser(User user) {
-        return null;
+        if (user.getId() == null || !users.containsKey(user.getId())) {
+            throw new ValidationException("Такого пользователя не существует.");
+        }
+        users.put(user.getId(), user);
+        log.debug("Пользователь успешно изменен: {} {}", user.getLastName(), user.getName());
+        return user;
     }
 
     @Override
-    public User deleteUser(User user) {
-        return null;
+    public void deleteUser(User user) {
+        if (user.getId() == null || !users.containsKey(user.getId())) {
+            throw new ValidationException("Такого пользователя не существует.");
+        }
+        users.remove(user.getId(), user);
+        log.debug("Пользователь успешно удален: {} {}", user.getLastName(), user.getName());
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        log.debug("Текущее количество пользователей: {}", users.size());
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public User getUserByName(String name) {
-        return null;
+        log.debug("Пытаюсь найти пользователя с именем {}.", name);
+        for (User user : users.values()) {
+            if (user.getName().equals(name)) {
+                log.debug("Успех! Пользователь с именем {} найден", name);
+                return user;
+            } else {
+                log.debug("Отказ! Пользователь с именем {} не найден", name);
+                return null;
+            }
+        }
     }
 
     @Override
@@ -52,17 +80,5 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public User getUserByEmail(String email) {
         return null;
-    }
-
-    private void isValid(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
-        }
-        if (user.getName() == null || user.getName().isBlank() || user.getName().contains(" ")) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
-        }
-        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now().minusYears(18))) {
-            throw new ValidationException("Работник не может быть младше 18 лет.");
-        }
     }
 }
