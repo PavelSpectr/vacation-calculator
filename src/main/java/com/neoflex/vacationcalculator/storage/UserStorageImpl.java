@@ -12,14 +12,14 @@ import java.util.*;
 @Component
 @Slf4j
 public class UserStorageImpl implements UserStorage {
-    private final Map<UUID, User> users = new HashMap<>();
+    private final Map<String, User> users = new HashMap<>();
 
     @Override
     public User createUser(User user) {
         log.debug("Создание пользователя...");
         userValidation(user);
         user.setId(UUID.randomUUID());
-        users.put(user.getId(), user);
+        users.put(user.getEmail(), user);
         log.debug("Сотрудник успешно добавлен: {} {}", user.getLastName(), user.getName());
 
         return user;
@@ -27,21 +27,21 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (user.getId() == null || !users.containsKey(user.getId())) {
+        if (user.getEmail() == null || !users.containsKey(user.getEmail())) {
             throw new ValidationException("Такого работника не существует.");
         }
         userValidation(user);
-        users.put(user.getId(), user);
+        users.put(user.getEmail(), user);
         log.debug("Данные сотрудника {} {} успешно изменены.", user.getLastName(), user.getName());
         return user;
     }
 
     @Override
     public void deleteUser(User user) {
-        if (user.getId() == null || !users.containsKey(user.getId())) {
+        if (user.getEmail() == null || !users.containsKey(user.getEmail())) {
             throw new ValidationException("Такого сотрудника не существует.");
         }
-        users.remove(user.getId(), user);
+        users.remove(user.getEmail(), user);
         log.debug("Сотрудник успешно удален: {} {}", user.getLastName(), user.getName());
     }
 
@@ -52,6 +52,56 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
+    public User getUserByEmail(String email) {
+        if (email == null) {
+            throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
+        }
+        log.debug("Пытаюсь найти сотрудника по E-mail: {}.", email);
+        for (User user : users.values()) {
+            if (user.getEmail().equals(email)) {
+                log.debug("Успех! Сотрудник с E-mail {} найден", email);
+                return user;
+            }
+        }
+        log.debug("Отказ! Сотрудник E-mail: {} не найден", email);
+        return null;
+    }
+
+    @Override
+    public List<User> getUserByFullNameAndBirthday(User user) {
+        Set<User> foundByFullNameAndBirthday = new HashSet<>();
+        log.debug("Поиск по дате рождения...");
+        List<User> byBirthday = getUserByBirthday(user.getBirthday());
+        log.debug("Поиск по фамилии...");
+        List<User> byLastName = getUserByLastName(user.getLastName());
+        log.debug("Поиск по имени...");
+        List<User> byName = getUserByName(user.getName());
+        log.debug("Поиск по отчеству...");
+        List<User> byPatronymic = getUserByPatronymic(user.getPatronymic());
+        log.debug("Формирую ответ...");
+        if (byBirthday != null) {
+            foundByFullNameAndBirthday.addAll(byBirthday);
+        }
+        if (byLastName != null) {
+            foundByFullNameAndBirthday.addAll(byLastName);
+        }
+        if (byName != null) {
+            foundByFullNameAndBirthday.addAll(byName);
+        }
+        if (byPatronymic != null) {
+            foundByFullNameAndBirthday.addAll(byPatronymic);
+        }
+        log.debug("Найдено сотрудников: {}", foundByFullNameAndBirthday.size());
+        if (!foundByFullNameAndBirthday.isEmpty() && foundByFullNameAndBirthday.size() > 1) {
+            log.warn("Внимание! Возможно наличие дубликатов! Рекомендуется удалить дубликаты сотрудника!");
+        } else if (foundByFullNameAndBirthday.isEmpty()) {
+            log.error("Не найдено ни одного сотрудника! Проверьте корректность данных запроса!");
+        } else {
+            log.debug("Сотрудник найден!");
+        }
+        return foundByFullNameAndBirthday.stream().toList();
+    }
+
     public List<User> getUserByName(String name) {
         if (name == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
@@ -70,7 +120,6 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByName;
     }
 
-    @Override
     public List<User> getUserByLastName(String lastName) {
         if (lastName == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
@@ -89,7 +138,6 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByLastName;
     }
 
-    @Override
     public List<User> getUserByPatronymic(String patronymic) {
         if (patronymic == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
@@ -108,7 +156,6 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByPatronymic;
     }
 
-    @Override
     public List<User> getUserByBirthday(LocalDate birthday) {
         if (birthday == null) {
             throw  new ValidationException("Ошибка: Неверный формат даты, либо попытка поиска пустого значения. Введите дату в формате: ДД.ММ.ГГГГ!");
@@ -125,58 +172,6 @@ public class UserStorageImpl implements UserStorage {
             }
         }
         return foundUsersByBirthday;
-    }
-
-
-    @Override
-    public List<User> getUserByFullNameAndBirthday(User user, String name, String lastName, String patronymic, LocalDate birthday) {
-        Set<User> foundByFullNameAndBirthday = new HashSet<>();
-        log.debug("Поиск по дате рождения...");
-        List<User> byBirthday = getUserByBirthday(birthday);
-        log.debug("Поиск по фамилии...");
-        List<User> byLastName = getUserByLastName(lastName);
-        log.debug("Поиск по имени...");
-        List<User> byName = getUserByName(name);
-        log.debug("Поиск по отчеству...");
-        List<User> byPatronymic = getUserByPatronymic(patronymic);
-        log.debug("Формирую ответ...");
-        if (byBirthday != null) {
-            foundByFullNameAndBirthday.addAll(byBirthday);
-        }
-        if (byLastName != null) {
-            foundByFullNameAndBirthday.addAll(byLastName);
-        }
-        if (byName != null) {
-            foundByFullNameAndBirthday.addAll(byName);
-        }
-        if (byPatronymic != null) {
-            foundByFullNameAndBirthday.addAll(byPatronymic);
-        }
-        log.debug("Найдено сотрудников: {}", foundByFullNameAndBirthday.size());
-        if (foundByFullNameAndBirthday.size() > 1) {
-            log.warn("Внимание! Возможно наличие дубликатов! Рекомендуется удалить дубликаты сотрудника!");
-        } else if (foundByFullNameAndBirthday.isEmpty()) {
-            log.error("Не найдено ни одного сотрудника! Проверьте корректность данных запроса!");
-        } else {
-            log.debug("Сотрудник найден!");
-        }
-        return foundByFullNameAndBirthday.stream().toList();
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        if (email == null) {
-            throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
-        }
-        log.debug("Пытаюсь найти сотрудника по E-mail: {}.", email);
-        for (User user : users.values()) {
-            if (user.getEmail().equals(email)) {
-                log.debug("Успех! Сотрудник с E-mail {} найден", email);
-                return user;
-            }
-        }
-        log.debug("Отказ! Сотрудник E-mail: {} не найден", email);
-        return null;
     }
 
     private void userValidation(User user) {
