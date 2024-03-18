@@ -2,6 +2,7 @@ package com.neoflex.vacationcalculator.storage;
 
 import com.neoflex.vacationcalculator.model.User;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserStorage {
@@ -13,11 +14,15 @@ public interface UserStorage {
 
     List<User> getAllUsers();
 
-    User getUserByName(String name);
+    List<User> getUserByName(String name);
 
-    User getUserByLastName(String lastName);
+    List<User> getUserByLastName(String lastName);
 
-    User getUserByPatronymic(String patronymic);
+    List<User> getUserByPatronymic(String patronymic);
+
+    List<User> getUserByBirthday(LocalDate birthday);
+
+    List<User> getUserByFullNameAndBirthday(User user, String name, String lastName, String patronymic, LocalDate birthday);
 
     User getUserByEmail(String email);
 }

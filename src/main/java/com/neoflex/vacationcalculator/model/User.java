@@ -44,6 +44,7 @@ public class User {
     @NotBlank
     private Status status;
 
+    @NotBlank
     @DateTimeFormat(pattern = "dd.MM.yyyy")
     @PastOrPresent
     private LocalDate hired;
@@ -55,13 +56,11 @@ public class User {
                 String lastName,
                 LocalDate birthday,
                 String email,
-                Integer salary,
-                LocalDate lastVacationDate) {
+                Integer salary) {
         this.name = name;
         this.lastName = lastName;
         this.birthday = birthday;
         this.email = email;
         this.salary = salary;
-        this.lastVacationDate = lastVacationDate;
     }
 }
