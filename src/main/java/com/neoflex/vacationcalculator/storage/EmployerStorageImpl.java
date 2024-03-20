@@ -1,7 +1,7 @@
 package com.neoflex.vacationcalculator.storage;
 
 import com.neoflex.vacationcalculator.model.Status;
-import com.neoflex.vacationcalculator.model.User;
+import com.neoflex.vacationcalculator.model.Employer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,56 +11,56 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class UserStorageImpl implements UserStorage {
-    private final Map<String, User> users = new HashMap<>();
+public class EmployerStorageImpl implements EmployerStorage {
+    private final Map<String, Employer> employers = new HashMap<>();
 
     @Override
-    public User createUser(User user) {
+    public Employer createEmployer(Employer employer) {
         log.debug("Создание пользователя...");
-        userValidation(user);
-        user.setId(UUID.randomUUID());
-        users.put(user.getEmail(), user);
-        log.debug("Сотрудник успешно добавлен: {} {}", user.getLastName(), user.getName());
+        userValidation(employer);
+        employer.setId(UUID.randomUUID());
+        employers.put(employer.getEmail(), employer);
+        log.debug("Сотрудник успешно добавлен: {} {}", employer.getLastName(), employer.getName());
 
-        return user;
+        return employer;
     }
 
     @Override
-    public User updateUser(User user) {
-        if (user.getEmail() == null || !users.containsKey(user.getEmail())) {
+    public Employer updateEmployer(Employer employer) {
+        if (employer.getEmail() == null || !employers.containsKey(employer.getEmail())) {
             throw new ValidationException("Такого работника не существует.");
         }
-        userValidation(user);
-        users.put(user.getEmail(), user);
-        log.debug("Данные сотрудника {} {} успешно изменены.", user.getLastName(), user.getName());
-        return user;
+        userValidation(employer);
+        employers.put(employer.getEmail(), employer);
+        log.debug("Данные сотрудника {} {} успешно изменены.", employer.getLastName(), employer.getName());
+        return employer;
     }
 
     @Override
-    public void deleteUser(User user) {
-        if (user.getEmail() == null || !users.containsKey(user.getEmail())) {
+    public void deleteEmployer(Employer employer) {
+        if (employer.getEmail() == null || !employers.containsKey(employer.getEmail())) {
             throw new ValidationException("Такого сотрудника не существует.");
         }
-        users.remove(user.getEmail(), user);
-        log.debug("Сотрудник успешно удален: {} {}", user.getLastName(), user.getName());
+        employers.remove(employer.getEmail(), employer);
+        log.debug("Сотрудник успешно удален: {} {}", employer.getLastName(), employer.getName());
     }
 
     @Override
-    public List<User> getAllUsers() {
-        log.debug("Текущее количество сотрудников: {}", users.size());
-        return new ArrayList<>(users.values());
+    public List<Employer> getAllEmployers() {
+        log.debug("Текущее количество сотрудников: {}", employers.size());
+        return new ArrayList<>(employers.values());
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Employer getEmployerByEmail(String email) {
         if (email == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
         }
         log.debug("Пытаюсь найти сотрудника по E-mail: {}.", email);
-        for (User user : users.values()) {
-            if (user.getEmail().equals(email)) {
+        for (Employer employer : employers.values()) {
+            if (employer.getEmail().equals(email)) {
                 log.debug("Успех! Сотрудник с E-mail {} найден", email);
-                return user;
+                return employer;
             }
         }
         log.debug("Отказ! Сотрудник E-mail: {} не найден", email);
@@ -68,16 +68,16 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public List<User> getUserByFullNameAndBirthday(User user) {
-        Set<User> foundByFullNameAndBirthday = new HashSet<>();
+    public List<Employer> getEmployerByFullNameAndBirthday(Employer employer) {
+        Set<Employer> foundByFullNameAndBirthday = new HashSet<>();
         log.debug("Поиск по дате рождения...");
-        List<User> byBirthday = getUserByBirthday(user.getBirthday());
+        List<Employer> byBirthday = getUserByBirthday(employer.getBirthday());
         log.debug("Поиск по фамилии...");
-        List<User> byLastName = getUserByLastName(user.getLastName());
+        List<Employer> byLastName = getUserByLastName(employer.getLastName());
         log.debug("Поиск по имени...");
-        List<User> byName = getUserByName(user.getName());
+        List<Employer> byName = getUserByName(employer.getName());
         log.debug("Поиск по отчеству...");
-        List<User> byPatronymic = getUserByPatronymic(user.getPatronymic());
+        List<Employer> byPatronymic = getUserByPatronymic(employer.getPatronymic());
         log.debug("Формирую ответ...");
         if (byBirthday != null) {
             foundByFullNameAndBirthday.addAll(byBirthday);
@@ -102,16 +102,16 @@ public class UserStorageImpl implements UserStorage {
         return foundByFullNameAndBirthday.stream().toList();
     }
 
-    public List<User> getUserByName(String name) {
+    public List<Employer> getUserByName(String name) {
         if (name == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
         }
-        List<User> foundUsersByName = new ArrayList<>();
+        List<Employer> foundUsersByName = new ArrayList<>();
         log.debug("Пытаюсь найти сотрудника с именем {}.", name);
-        for (User user : users.values()) {
-            if (user.getName().equals(name)) {
+        for (Employer employer : employers.values()) {
+            if (employer.getName().equals(name)) {
                 log.debug("Успех! Сотрудник с именем {} найден", name);
-                foundUsersByName.add(user);
+                foundUsersByName.add(employer);
             } else {
                 log.debug("Отказ! Сотрудник с именем {} не найден", name);
                 return null;
@@ -120,16 +120,16 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByName;
     }
 
-    public List<User> getUserByLastName(String lastName) {
+    public List<Employer> getUserByLastName(String lastName) {
         if (lastName == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
         }
-        List<User> foundUsersByLastName = new ArrayList<>();
+        List<Employer> foundUsersByLastName = new ArrayList<>();
         log.debug("Пытаюсь найти сотрудников с фамилией {}.", lastName);
-        for (User user : users.values()) {
-            if (user.getLastName().equals(lastName)) {
+        for (Employer employer : employers.values()) {
+            if (employer.getLastName().equals(lastName)) {
                 log.debug("Успех! Сотрудник с фамилией {} найден", lastName);
-                foundUsersByLastName.add(user);
+                foundUsersByLastName.add(employer);
             } else {
                 log.debug("Отказ! Сотрудник с фамилией {} не найден", lastName);
                 return null;
@@ -138,16 +138,16 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByLastName;
     }
 
-    public List<User> getUserByPatronymic(String patronymic) {
+    public List<Employer> getUserByPatronymic(String patronymic) {
         if (patronymic == null) {
             throw  new ValidationException("Ошибка: попытка поиска пустого значения.");
         }
-        List<User> foundUsersByPatronymic = new ArrayList<>();
+        List<Employer> foundUsersByPatronymic = new ArrayList<>();
         log.debug("Пытаюсь найти пользователя с отчеством {}.", patronymic);
-        for (User user : users.values()) {
-            if (user.getPatronymic().equals(patronymic)) {
+        for (Employer employer : employers.values()) {
+            if (employer.getPatronymic().equals(patronymic)) {
                 log.debug("Успех! Сотрудник с отчеством {} найден", patronymic);
-                foundUsersByPatronymic.add(user);
+                foundUsersByPatronymic.add(employer);
             } else {
                 log.debug("Отказ! Сотрудник с отчеством {} не найден", patronymic);
                 return null;
@@ -156,16 +156,16 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByPatronymic;
     }
 
-    public List<User> getUserByBirthday(LocalDate birthday) {
+    public List<Employer> getUserByBirthday(LocalDate birthday) {
         if (birthday == null) {
             throw  new ValidationException("Ошибка: Неверный формат даты, либо попытка поиска пустого значения. Введите дату в формате: ДД.ММ.ГГГГ!");
         }
-        List<User> foundUsersByBirthday = new ArrayList<>();
+        List<Employer> foundUsersByBirthday = new ArrayList<>();
         log.debug("Пытаюсь найти сотрудника по дате рождения {}.", birthday);
-        for (User user : users.values()) {
-            if (user.getBirthday().equals(birthday)) {
+        for (Employer employer : employers.values()) {
+            if (employer.getBirthday().equals(birthday)) {
                 log.debug("Успех! Сотрудник с датой рождения {} найден.", birthday);
-                foundUsersByBirthday.add(user);
+                foundUsersByBirthday.add(employer);
             } else {
                 log.debug("Отказ! Сотрудник с датой рождения {} не найден.", birthday);
                 return null;
@@ -174,23 +174,23 @@ public class UserStorageImpl implements UserStorage {
         return foundUsersByBirthday;
     }
 
-    private void userValidation(User user) {
-        if (user.getBirthday().isAfter(LocalDate.now().minusYears(18))) {
+    private void userValidation(Employer employer) {
+        if (employer.getBirthday().isAfter(LocalDate.now().minusYears(18))) {
             throw new ValidationException("Сотрудник не может быть младше 18 лет.");
         }
-        if (user.getLastVacationDate().isBefore(user.getHired())) {
+        if (employer.getLastVacationDate().isBefore(employer.getHired())) {
             throw new ValidationException("Сотрудник не мог находиться в отпуске до того, как был нанят.");
         }
-        if (user.getHired() == null) {
-            user.setHired(LocalDate.now());
+        if (employer.getHired() == null) {
+            employer.setHired(LocalDate.now());
         }
-        if (user.getLastVacationDate() == null) {
-            user.setLastVacationDate(user.getHired());
+        if (employer.getLastVacationDate() == null) {
+            employer.setLastVacationDate(employer.getHired());
         }
-        if (user.getFired() == null || user.getFired().isAfter(LocalDate.now())) {
-            user.setStatus(Status.WORKING);
+        if (employer.getFired() == null || employer.getFired().isAfter(LocalDate.now())) {
+            employer.setStatus(Status.WORKING);
         } else {
-            user.setStatus(Status.FIRED);
+            employer.setStatus(Status.FIRED);
         }
     }
 }

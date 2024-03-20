@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 
 @Data
 @AllArgsConstructor
-public class User {
+public class Employer {
     @NotBlank(message = "Ошибка присвоения идентификатора.")
     private UUID id;
 
@@ -52,7 +52,7 @@ public class User {
     @DateTimeFormat(pattern = "dd.MM.yyyy")
     private LocalDate fired;
 
-    public User(String name,
+    public Employer(String name,
                 String lastName,
                 LocalDate birthday,
                 String email,
