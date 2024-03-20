@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/calculator")
-public class CalculatorController {
+@RequestMapping("/employer")
+public class EmployerController {
 }

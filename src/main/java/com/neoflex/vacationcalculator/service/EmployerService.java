@@ -1,7 +1,6 @@
 package com.neoflex.vacationcalculator.service;
 
 import com.neoflex.vacationcalculator.model.Employer;
-import com.neoflex.vacationcalculator.model.User;
 
 import java.util.List;
 

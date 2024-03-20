@@ -41,7 +41,7 @@ public class EmployerStorageImpl implements EmployerStorage {
         if (employer.getEmail() == null || !employers.containsKey(employer.getEmail())) {
             throw new ValidationException("Такого сотрудника не существует.");
         }
-        employers.remove(employer.getEmail(), employer);
+        employers.remove(employer.getEmail());
         log.debug("Сотрудник успешно удален: {} {}", employer.getLastName(), employer.getName());
     }
 
