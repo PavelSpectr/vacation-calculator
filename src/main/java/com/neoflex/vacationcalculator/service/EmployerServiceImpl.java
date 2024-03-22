@@ -5,6 +5,7 @@ import com.neoflex.vacationcalculator.storage.EmployerStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -38,7 +39,7 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
     @Override
-    public List<Employer> getEmployerByFullNameAndBirthday(Employer employer) {
-        return employerStorage.getEmployerByFullNameAndBirthday(employer);
+    public List<Employer> getEmployerByFullNameAndBirthday(String name, String lastName, String patronymic, LocalDate birthday) {
+        return employerStorage.getEmployerByFullNameAndBirthday(name, lastName, patronymic, birthday);
     }
 }

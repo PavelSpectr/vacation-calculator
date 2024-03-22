@@ -1,6 +1,7 @@
 package com.neoflex.vacationcalculator.service;
 
 import com.neoflex.vacationcalculator.model.Employer;
+import com.neoflex.vacationcalculator.storage.EmployerStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,12 @@ import java.util.Scanner;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class VacationCalculatorImpl implements VacationCalculator {
+public class VacationCalculatorServiceImpl implements VacationCalculatorService {
+    private final EmployerStorage employerStorage;
+
     @Override
-    public long vacationCalculator(Employer employer) {
+    public long vacationCalculator(String email) {
+        Employer employer = employerStorage.getEmployerByEmail(email);
         LocalDate startVac;
         LocalDate endVac;
         long vacCountDays;
@@ -35,7 +39,7 @@ public class VacationCalculatorImpl implements VacationCalculator {
             System.out.println("Данные введены верно.");
         } else {
             System.out.println("Ошибка! Даты введены не верно. Проверьте корректность введенных данных и повторите попытку.");
-            vacationCalculator(employer);
+            vacationCalculator(email);
         }
         double avgSalaryPerDay = employer.getSalary() / 29.3;
         return (long) avgSalaryPerDay * vacCountDays;

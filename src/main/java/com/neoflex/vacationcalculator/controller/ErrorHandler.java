@@ -1,13 +1,13 @@
-package com.neoflex.vacationcalculator.exception;
+package com.neoflex.vacationcalculator.controller;
 
-import com.neoflex.vacationcalculator.controller.CalculatorController;
+import com.neoflex.vacationcalculator.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.neoflex.vacationcalculator.model.ErrorResponse;
 
-@RestControllerAdvice(assignableTypes = {CalculatorController.class})
+@RestControllerAdvice(assignableTypes = {EmployerController.class, CalculatorController.class})
 public class ErrorHandler {
 
     @ExceptionHandler

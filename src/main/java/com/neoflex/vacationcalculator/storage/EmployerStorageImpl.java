@@ -68,16 +68,16 @@ public class EmployerStorageImpl implements EmployerStorage {
     }
 
     @Override
-    public List<Employer> getEmployerByFullNameAndBirthday(Employer employer) {
+    public List<Employer> getEmployerByFullNameAndBirthday(String name, String lastName, String patronymic, LocalDate birthday) {
         Set<Employer> foundByFullNameAndBirthday = new HashSet<>();
         log.debug("Поиск по дате рождения...");
-        List<Employer> byBirthday = getUserByBirthday(employer.getBirthday());
+        List<Employer> byBirthday = getUserByBirthday(birthday);
         log.debug("Поиск по фамилии...");
-        List<Employer> byLastName = getUserByLastName(employer.getLastName());
+        List<Employer> byLastName = getUserByLastName(lastName);
         log.debug("Поиск по имени...");
-        List<Employer> byName = getUserByName(employer.getName());
+        List<Employer> byName = getUserByName(patronymic);
         log.debug("Поиск по отчеству...");
-        List<Employer> byPatronymic = getUserByPatronymic(employer.getPatronymic());
+        List<Employer> byPatronymic = getUserByPatronymic(patronymic);
         log.debug("Формирую ответ...");
         if (byBirthday != null) {
             foundByFullNameAndBirthday.addAll(byBirthday);

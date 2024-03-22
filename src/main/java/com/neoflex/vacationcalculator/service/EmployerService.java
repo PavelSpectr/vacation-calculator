@@ -2,6 +2,7 @@ package com.neoflex.vacationcalculator.service;
 
 import com.neoflex.vacationcalculator.model.Employer;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface EmployerService {
@@ -15,5 +16,5 @@ public interface EmployerService {
 
     Employer getEmployerByEmail(String email);
 
-    List<Employer> getEmployerByFullNameAndBirthday(Employer employer);
+    List<Employer> getEmployerByFullNameAndBirthday(String name, String lastName, String patronymic, LocalDate birthday);
 }
