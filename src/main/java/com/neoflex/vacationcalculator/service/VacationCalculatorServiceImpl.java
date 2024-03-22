@@ -20,6 +20,7 @@ public class VacationCalculatorServiceImpl implements VacationCalculatorService 
 
     @Override
     public long vacationCalculator(String email) {
+        log.debug("Start VacationCalculatorService service...");
         Employer employer = employerStorage.getEmployerByEmail(email);
         LocalDate startVac;
         LocalDate endVac;
@@ -37,6 +38,7 @@ public class VacationCalculatorServiceImpl implements VacationCalculatorService 
         }
         if (vacCountDays > 0) {
             System.out.println("Данные введены верно.");
+            employer.setLastVacationDate(endVac);
         } else {
             System.out.println("Ошибка! Даты введены не верно. Проверьте корректность введенных данных и повторите попытку.");
             vacationCalculator(email);
