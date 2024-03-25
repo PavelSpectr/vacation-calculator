@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.neoflex.vacationcalculator.model.ErrorResponse;
 
-@RestControllerAdvice(assignableTypes = {EmployerController.class, CalculatorController.class})
+@RestControllerAdvice(assignableTypes = {EmployerController.class, VacationCalculatorController.class})
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBadRequest(final NullPointerException e) {
         return new ErrorResponse("404 - Искомый объект не найден", e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotFound(final ValidationException e) {
         return new ErrorResponse("400 - Ошибка валидации", e.getMessage());
     }

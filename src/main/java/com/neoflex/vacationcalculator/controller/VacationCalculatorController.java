@@ -14,7 +14,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/calculator")
-public class CalculatorController {
+public class VacationCalculatorController {
     private final VacationCalculatorService calculatorService;
 
     @GetMapping("/{employer}")

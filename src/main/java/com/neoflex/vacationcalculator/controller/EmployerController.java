@@ -48,7 +48,10 @@ public class EmployerController {
     }
 
     @GetMapping("/{name}&{lastname}&{patronymic}&{birthday}")
-    public List<Employer> getEmployerByFullNameAndBirthday(@PathVariable("name") String name, @PathVariable("lastname") String lastName, @PathVariable("patronymic") String patronymic, @PathVariable("birthday") LocalDate birthday) {
+    public List<Employer> getEmployerByFullNameAndBirthday(@PathVariable(value = "name", required = false) String name,
+                                                           @PathVariable(value = "lastname", required = false) String lastName,
+                                                           @PathVariable(value = "patronymic", required = false) String patronymic,
+                                                           @PathVariable(value = "birthday", required = false) LocalDate birthday) {
         log.debug("Start GetEmployerByFullNameAndBirthday controller...");
         return employerService.getEmployerByFullNameAndBirthday(name, lastName, patronymic, birthday);
     }
