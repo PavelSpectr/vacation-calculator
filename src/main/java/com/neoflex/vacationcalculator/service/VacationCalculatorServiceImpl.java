@@ -22,9 +22,11 @@ public class VacationCalculatorServiceImpl implements VacationCalculatorService 
     public long vacationCalculator(String email) {
         log.debug("Start VacationCalculatorService service...");
         Employer employer = employerStorage.getEmployerByEmail(email);
+        System.out.println("Введите дату начала отпуска сотрудника в формате ДД.ММ.ГГГГ:");
         LocalDate startVac = dateParser();
+        System.out.println("Введите дату крайнего дня отпуска сотрудника в формате ДД.ММ.ГГГГ:");
         LocalDate endVac = dateParser();
-        long vacCountDays = Duration.between(startVac, endVac).toDays();
+        long vacCountDays = Duration.between(startVac, endVac).plusDays(1).toDays();
         if (vacCountDays > 0) {
             System.out.println("Данные введены верно.");
             employer.setLastVacationDate(endVac);
@@ -42,7 +44,6 @@ public class VacationCalculatorServiceImpl implements VacationCalculatorService 
         String dateFormat = "\\d{2}.\\d{2}.\\d{4}";
         LocalDate date;
         try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Введите дату начала отпуска сотрудника в формате ДД.ММ.ГГГГ:");
             date = LocalDate.parse(scanner.next(dateFormat), formatter);
         } catch (InputMismatchException e) {
             throw new InputMismatchException("Ошибка! Даты введены не верно. Проверьте корректность введенных данных и повторите попытку. " + e.getMessage());
