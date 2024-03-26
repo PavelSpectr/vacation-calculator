@@ -27,7 +27,7 @@ public class VacationCalculatorServiceImpl implements VacationCalculatorService 
         System.out.println("Введите дату крайнего дня отпуска сотрудника в формате ДД.ММ.ГГГГ:");
         LocalDate endVac = dateParser();
         long vacCountDays = Duration.between(startVac, endVac).plusDays(1).toDays();
-        if (vacCountDays > 0) {
+        if (startVac != null && endVac != null && vacCountDays > 0) {
             System.out.println("Данные введены верно.");
             employer.setLastVacationDate(endVac);
         } else {
